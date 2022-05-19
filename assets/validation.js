@@ -24,7 +24,11 @@
                     beforeSend: function(){
                     $(this).text('Loading ...');
                 }, success: function (data) {
-                    console.log(data);
+                    let success = $('.alert').addClass('alert-success');
+                    success.removeClass('d-none');
+                    success.text('The Form Submitted Successfully');
+                    ('#valid-form')[0].reset();
+
                 },error: function (jqXHR, textStatus, errorThrown) {
                     console.log("jqXHR:" + jqXHR);
                     console.log("TestStatus: " + textStatus);

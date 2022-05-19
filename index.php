@@ -40,6 +40,7 @@ class VFORM
         global $wpdb;
         $table_name = $wpdb->prefix . 'vform';
         $sql = "CREATE TABLE {$table_name} (id int not null AUTO_INCREMENT, name VARCHAR(25), email VARCHAR(30), phone VARCHAR(20),zipcode VARCHAR(10), PRIMARY KEY (id) );";
+        require_once(ABSPATH . "wp-admin/includes/upgrade.php");
         dbDelta($sql);
         add_option('vform_db_version', VFORM_DB_VERSION);
 
@@ -136,7 +137,6 @@ class VFORM
         $dbTableUsers = new VFORM_DATA($vformUsers);
         $dbTableUsers->prepare_items();
         $dbTableUsers->display();
-        $table = new VFORM_DATA();
 
         // $orderBy = $_REQUEST['orderby'] ?? '';
         // $order = $_REQUEST['order'] ?? '';
@@ -171,15 +171,29 @@ class VFORM
         //     }
         // }
 
-        $table->set_data($data);
+        $dbTableUsers->set_data($data);
     }
 
-    function vform_contact(){
+    function vform_contact()
+    {
+        $nonce = sanitize_text_field($_POST['nonce']);
         $name = isset($_POST['name']) ? $_POST['name'] : '';
         $email = isset($_POST['email']) ? $_POST['email'] : '';
         $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
-        var_dump($name);
+        $zipcode = isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
+
+        if (wp_verify_nonce($nonce, 'vform')) {
+            $name = sanitize_text_field($name);
+            $email = sanitize_text_field($email);
+            $phone = sanitize_text_field($phone);
+            $zipcode = sanitize_text_field($zipcode);
+            global $wpdb;
+
+            $wpdb->insert("{$wpdb->prefix}vform", ['name' => $name, 'email' => $email, 'phone' => $phone, 'zipcode' => $zipcode]);
+            wp_redirect(admin_url('admin.php?page=vform'));
+        }
     }
+
 
     function vform_frontend()
     {

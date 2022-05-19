@@ -3,7 +3,9 @@
         <div class="col-md-6 mx-auto">
             <h2>Validation Form</h2>
 
-            <form action="" method="post">
+            <form action="" method="post" id="valid-form">
+                <?php wp_nonce_field('vform', 'nonce'); ?>
+                <div class="alert d-none"></div>
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input type="text" name="name" id="name" placeholder="name" class="form-control">
@@ -27,6 +29,7 @@
                     <input type="zipcode" name="zipcode" id="zip" placeholder="zipcode" class="form-control">
                     <div class="invalid-feedback">Enter a valid Zipcode</div>
                 </div>
+                
                 <input type="submit" value="submit" name="submit" id='validation-submit' class="btn btn-primary btn-block">
             </form>
         </div>
