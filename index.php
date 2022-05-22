@@ -70,7 +70,6 @@ class VFORM
     {
         wp_enqueue_style('bootstrap-style', '//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css');
         wp_enqueue_style('vform-style', plugin_dir_url(__FILE__) . 'assets/form.css', '', rand(111, 999));
-        // wp_enqueue_script( 'bootstrap-jquery', '//code.jquery.com/jquery-3.4.1.slim.min.js');
         wp_enqueue_script('bootstrap-popper', '//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js');
         wp_enqueue_script('bootstrap-min', '//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js');
         wp_enqueue_script('jquery', '//code.jquery.com/jquery-3.6.0.min.js');
@@ -88,36 +87,6 @@ class VFORM
         add_menu_page(__('Validation Form', 'vform'), __('Validation Form', 'vform'), 'manage_options', 'vform', array($this, 'vform_table_display'), 'dashicons-feedback');
     }
 
-
-    /**
-     * Filtering the data with Name 
-     */
-    function vform_search_by_name($item)
-    {
-        $name = strtolower($item['name']);
-        $search_name = sanitize_text_field($_REQUEST['name']);
-
-        if (strpos($name, $search_name) !== false) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Filtering the data with Name 
-     */
-    function vform_search_by_email($item)
-    {
-        $email = strtolower($item['email']);
-        $search_email = sanitize_text_field($_REQUEST['email']);
-
-        if (strpos($email, $search_email) !== false) {
-            return true;
-        }
-        return false;
-    }
-
-
     function vform_table_display()
     {
         // include_once 'inc/dataset.php';
@@ -127,44 +96,41 @@ class VFORM
 
         global $wpdb;
         $vformUsers = $wpdb->get_results("SELECT id, name, email, phone, zipcode from {$wpdb->prefix}vform ORDER BY id DESC", ARRAY_A);
-        $dbTableUsers = new VFORM_DATA($vformUsers);
-        $dbTableUsers->prepare_items();
-        $dbTableUsers->display();
+        $validUsers = new VFORM_DATA($vformUsers);
 
-        // $orderBy = $_REQUEST['orderby'] ?? '';
-        // $order = $_REQUEST['order'] ?? '';
 
-        // if (isset($_REQUEST['name']) && !empty($_REQUEST['name'])) {
-        //     $data = array_filter($data, 'vform_search_by_name');
-        // }
+        /**
+         * Filtering the data with Name 
+         */
+        function vform_search_by_name($item)
+        {
+            $name = strtolower($item['name']);
+            $search = sanitize_text_field($_REQUEST['s']);
 
-        // if (isset($_REQUEST['email']) && !empty($_REQUEST['email'])) {
-        //     $data = array_filter($data, 'vform_search_by_email');
-        // }
+            if (strpos($name, $search) !== false) {
+                return true;
+            }
+            return false;
+        }
 
-        // if ('name' == $orderBy) {
-        //     if ('asc' == $order) {
-        //         usort($data, function ($item1, $item2) {
-        //             return $item2['name'] <=> $item1['name'];
-        //         });
-        //     } else {
-        //         usort($data, function ($item1, $item2) {
-        //             return $item1['name'] <=> $item2['name'];
-        //         });
-        //     }
-        // }elseif('email' == $orderBy){
-        //     if ('asc' == $order) {
-        //         usort($data, function ($item1, $item2) {
-        //             return $item2['email'] <=> $item1['email'];
-        //         });
-        //     } else {
-        //         usort($data, function ($item1, $item2) {
-        //             return $item1['email'] <=> $item2['email'];
-        //         });
-        //     }
-        // }
+        if (isset($_REQUEST['s'])) {
+            $vformUsers = array_filter($vformUsers, 'vform_search_by_name');
+        }
 
-        // $dbTableUsers->set_data($data);
+        $validUsers->set_data($vformUsers);
+        $validUsers->prepare_items();
+?>
+
+        <div class="wrap">
+            <form method="get">
+                <?php
+                $validUsers->search_box('search', 'valid_search');
+                $validUsers->display(); ?>
+                <input type="hidden" name="page" value="<?php echo $_REQUEST['page']; ?>">
+            </form>
+        </div>
+<?php
+
     }
 
     function vform_contact()

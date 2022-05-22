@@ -8,11 +8,12 @@ if(!class_exists('WP_LIST_TABLE')){
 
 class VFORM_DATA extends WP_LIST_TABLE{
 
-    function __construct($data)
-    {
-        parent::__construct();
-        $this->items = $data;
-    }
+     private $_items;
+    // function __construct($data)
+    // {
+    //     parent::__construct();
+    //     $this->items = $data;
+    // }
 
     function get_columns(){
         return [
@@ -23,6 +24,11 @@ class VFORM_DATA extends WP_LIST_TABLE{
             'zipcode' => __('Zipcode', 'vdata'),
         ];
 
+    }
+
+    function set_data($data){
+        parent::__construct();
+     $this->_items = $data;
     }
 
     function get_sortable_columns(){
@@ -42,6 +48,20 @@ class VFORM_DATA extends WP_LIST_TABLE{
 
     function prepare_items()
     {
-        $this->_column_headers = array($this->get_columns(), [], []);
+        $paged = $_REQUEST['paged']?? 1;
+        $per_page = 2;
+        $total_items = count($this->_items);
+        $this->_column_headers = array($this->get_columns(), [], $this->get_sortable_columns());
+        $data_chunk = array_chunk($this->_items,$per_page);
+        if(count($data_chunk) > 0){
+        $this->items = $data_chunk[$paged - 1];
+        $this->set_pagination_args([
+            'total_items' => $total_items,
+            'per_page' => $per_page,
+            'total_page' => count($this->items)/ $per_page,
+        ]);
+        }else{
+            echo 'No Matching Name Found';
+        }
     }
 }
