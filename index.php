@@ -23,7 +23,7 @@ class VFORM
         add_action('plugins_loaded', array($this, 'vform_plugin_textdomain'));
         add_action('admin_menu', array($this, 'vform_admin_page'));
         register_activation_hook(__FILE__, array($this, 'vform_init'));
-        register_activation_hook(__FILE__, array($this, "vform_load_data"));
+        // register_activation_hook(__FILE__, array($this, "vform_load_data"));
         add_action('wp_enqueue_scripts', array($this, 'vform_scripts'));
         add_action('wp_footer', array($this, 'vform_frontend'));
         add_action('wp_ajax_validation', array($this, 'vform_contact'));
@@ -51,20 +51,20 @@ class VFORM
         }
     }
 
-    function vform_load_data()
-    {
-        global $wpdb;
-        $tableName = $wpdb->prefix . 'vform';
-        $wpdb->insert($tableName, [
-            'name' => 'john doe',
-            'email' => 'john@doe.com',
-        ]);
+    // function vform_load_data()
+    // {
+    //     global $wpdb;
+    //     $tableName = $wpdb->prefix . 'vform';
+    //     $wpdb->insert($tableName, [
+    //         'name' => 'john doe',
+    //         'email' => 'john@doe.com',
+    //     ]);
 
-        $wpdb->insert($tableName, [
-            'name' => 'jane doe',
-            'email' => 'jane@doe.com',
-        ]);
-    }
+    //     $wpdb->insert($tableName, [
+    //         'name' => 'jane doe',
+    //         'email' => 'jane@doe.com',
+    //     ]);
+    // }
 
     function vform_scripts()
     {
@@ -120,20 +120,13 @@ class VFORM
 
     function vform_table_display()
     {
-        include_once 'inc/dataset.php';
+        // include_once 'inc/dataset.php';
 
         global $wpdb;
         echo '<h2>Validation Form</h2>';
 
-        $id = isset($_GET['id']) ? $_GET['id'] : 0;
-        $id = sanitize_key($id);
-
-        if ($id) {
-            $result = $wpdb->get_row("select * from {$wpdb->prefix}vform where id='{$id}'");
-        }
-
         global $wpdb;
-        $vformUsers = $wpdb->get_results("SELECT id, name, email, phone, zipcode from {$wpdb->prefix}persons ORDER BY id DESC", ARRAY_A);
+        $vformUsers = $wpdb->get_results("SELECT id, name, email, phone, zipcode from {$wpdb->prefix}vform ORDER BY id DESC", ARRAY_A);
         $dbTableUsers = new VFORM_DATA($vformUsers);
         $dbTableUsers->prepare_items();
         $dbTableUsers->display();
@@ -171,12 +164,13 @@ class VFORM
         //     }
         // }
 
-        $dbTableUsers->set_data($data);
+        // $dbTableUsers->set_data($data);
     }
 
     function vform_contact()
     {
         $nonce = sanitize_text_field($_POST['nonce']);
+        var_dump($nonce);
         $name = isset($_POST['name']) ? $_POST['name'] : '';
         $email = isset($_POST['email']) ? $_POST['email'] : '';
         $phone = isset($_POST['phone']) ? $_POST['phone'] : '';

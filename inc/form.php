@@ -4,7 +4,7 @@
             <h2>Validation Form</h2>
 
             <form action="" method="post" id="valid-form">
-                <?php wp_nonce_field('vform', 'nonce'); ?>
+                <?php wp_nonce_field('vform', 'vform'); ?>
                 <div class="alert d-none"></div>
                 <div class="form-group">
                     <label for="name">Name</label>

@@ -7,10 +7,11 @@ if(!class_exists('WP_LIST_TABLE')){
 }
 
 class VFORM_DATA extends WP_LIST_TABLE{
-    private $_items;
 
-    function set_data($data){
-        $this->_items = $data;
+    function __construct($data)
+    {
+        parent::__construct();
+        $this->items = $data;
     }
 
     function get_columns(){
