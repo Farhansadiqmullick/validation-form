@@ -136,7 +136,6 @@ class VFORM
     function vform_contact()
     {
         $nonce = sanitize_text_field($_POST['nonce']);
-        var_dump($nonce);
         $name = isset($_POST['name']) ? $_POST['name'] : '';
         $email = isset($_POST['email']) ? $_POST['email'] : '';
         $phone = isset($_POST['phone']) ? $_POST['phone'] : '';
